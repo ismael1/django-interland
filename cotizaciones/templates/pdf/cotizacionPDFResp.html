@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizacion</title>
+    <style type="text/css">
+        table{
+            width: 100%;
+        }
+        .header{
+            background-color: #00786c;
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            border: 1px solid #00786c;
+            border-radius: 2px;
+        }
+        .notas{
+            background-color: #00786c;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: left;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }    
+        .seccion{
+            background-color: #596261;
+            color: #ffffff;
+            vertical-align: middle;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 1px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        .zonaP{
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1px;
+            border: 1px solid transparent;
+            border-radius: 0.35rem;
+            color: #7d2c38;
+            background-color: #fcdde2;
+            border-color: #fbcfd6;
+        }
+        .zonaC{
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1PX;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            color: #0e6251;
+            background-color: #d1f2eb;
+            border-color: #bfece3;
+        }
+        .zonaN{
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1px;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            color: #806027;
+            background-color: #fdf1db;
+            border-color: #fdebcd;
+        }
+        .zonaNZ{
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1px;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            color: #1f5b71;
+            background-color: #d8eff8;
+            border-color: #c8e9f5;
+        }
+        .items{
+            background-color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: left;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        .item{
+            background-color: #00786c;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #00786c;
+            border-radius: 30px;
+        }
+        .rechaza{
+            background-color: #780000;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #780000;
+            border-radius: 30px;
+        }
+        .aceptado{
+            background-color: #00786c;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #00786c;
+            border-radius: 30px;
+        }
+        .pendiente{
+            background-color: #f3ae38;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #f3ae38;
+            border-radius: 30px;
+        }
+        .cotizando{
+            background-color: #36adc5;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #36adc5;
+            border-radius: 30px;
+        }
+        .text{
+            color: #838887;
+            font-size: 12px;
+        }
+        .textZona{
+            color: #838887;
+            font-size: 12px;
+        }
+        .espacio{
+            background-color: #ffffff;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+        }
+        p{
+            background-color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: justify;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        li{
+            background-color: #ffffff;
+            font-size: 10px;
+            text-align: justify;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+    </style>
+</head>
+<body>
+    {% for cotiza in ServicioCotizacion %}
+    <div id="header_content">
+        <table style="border-bottom:2px solid #00786c; table-layout: fixed; width: 100%;">
+            <tr>
+              <td style="border-bottom:8px solid #00786c; width: 20%;">
+                <div style="display: flex; align-items: center;">
+                  <img src="data:image/png;base64,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" alt="Logo Interland" style="width: 100%;" />
+                </div>
+              </td>
+              <td style="width: 60%;">
+                <div style="align-items: center; padding-right: 20px; padding-left: 20px; margin-right: auto; margin-left: auto;">
+                  <div style="color:#000000"><b>INTERLAND TRANSPORT SA DE CV</b></div>
+                  <div>Jaime  Balmes  11  Edificio  C  Piso  7  Of.  701B  Col.  Los  MoralesPolanco  Del.  Miguel  Hidalgo,  Ciudad  de  Mexico,  C.P.  11510,Mexico.</div>
+                  <div>RFC: ITR071117UD1</div>
+                  <div>Regimen: 601 - General de Ley Personas Morales.</div>
+                </div>
+              </td>
+              <td style="width: 20%;">
+                <div style="border:2px solid #6c757d; width:150px; align-items: center; padding-right: 20px; padding-left: 20px; margin-right: auto; margin-left: auto; padding-top: 10px; margin-top: auto;">
+                    <b style="font-weight: bold; color: #00786c;">COTIZACIÓN</b><br>
+                    <b style="font-weight: bold; color: #000000;">FOLIO ID:</b><br>
+                    {% if cotiza.cambiosConsecutivo == 0 %}
+                        <b style="font-weight: bold; color: #000000;">{{ cotiza.folioConsecutivo}}</b>
+                    {% else %}
+                        <b style="font-weight: bold; color: #000000;">{{ cotiza.folioConsecutivo }}-{{ cotiza.cambiosConsecutivo}}</b>
+                    {% endif %}
+                </div>
+              </td>
+            </tr>
+        </table>
+    </div>
+    
+    <table class="tg">
+        
+        <thead>
+            
+        </thead>
+        <tbody>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="seccion" colspan="2" style="text-align: left;">Información General</td>
+
+                <td class="seccion" colspan="2" style="text-align: right;"></td>
+
+            </tr>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                
+                {% if cotiza.cambiosConsecutivo == 0 %}
+                    <td class="items">Folio de Cotización: <div class="text">{{ cotiza.folioConsecutivo}}</div> </td>
+                {% else %}
+                    <td class="items">Folio de Cotización: <div class="text">{{ cotiza.folioConsecutivo}}-{{ cotiza.cambiosConsecutivo}}</div> </td>
+                {% endif %}
+                <td class="items">Origen: <div class="text">{{cotiza.paisOrigen}}, C.P. {{cotiza.cpOrigen}}, {{cotiza.estadoOrigen}}, {{cotiza.ciudadOrigen}}</div></td>
+                <td class="items">Destino: <div class="text">{{cotiza.paisDestino}}, C.P. {{cotiza.cpDestino}}, {{cotiza.estadoDestino   }}, {{cotiza.ciudadDestino}}</div></td>
+                
+                <td rowspan="3" style="text-align: center;">
+                    <img src="" alt="Interland_logo" style="width: 90px;">
+                    {% if cotiza.divisaFinal == 2 %}
+                    <div class="item">Divisa: MXN </div>
+                    {% else %}
+                    <div class="item">Divisa: USD </div>
+                    {% endif %}
+                    <br>
+                    {% if cotiza.estatus == 0 %}
+                    <div class="pendiente">ESTATUS: PENDIENTE</div>
+                    {% elif cotiza.estatus == 1 %}
+                    <div class="aceptado">ESTATUS: ACEPTADO</div>
+                    {% elif cotiza.estatus == 2 %}
+                    <div class="rechaza">ESTATUS: RECHAZADO</div>
+                    {% elif cotiza.estatus == 3 %}
+                    <div class="cotizando">ESTATUS: COTIZANDO</div>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="espacio" colspan="3"></td>
+            </tr>
+            <tr>
+                <td class="items">Fecha de Cotización: <div class="text">{{ cotiza.fechaCarga}}</div></td>
+                <td class="items">Tipo de Operación: <div class="text">{{ cotiza.tipoOperacion}}</div></td>
+                {% if cotiza.tipoCarga == 'g' %}
+                <td class="items">Tipo de Carga: <div class="text">GENERAL</div></td>
+                {% elif cotiza.tipoCarga == 'h' %}
+                <td class="items">Tipo de Carga: <div class="text">PELIGROSA</div></td>
+                {% elif cotiza.tipoCarga == 'r' %}
+                <td class="items">Tipo de Carga: <div class="text">REFRIGERADA</div></td>
+                {% endif%}
+                
+            </tr>
+            <tr>
+                <td class="espacio" colspan="3"></td>
+            </tr>
+            <tr>
+                <td class="items">Tipo Servicio: <div class="text">{{ cotiza.tipoServicio}}</div></td>
+                <td class="items">Tipo de Envio: <div class="text">{{ cotiza.tipoEnvio}}</div></td>
+                <td class="items">Usuario que Genera: <div class="text">{{ cotiza.usuarioGenera}}</div></td>
+            </tr>
+            <tr>
+                {% if cotiza.zona == 'COMERCIAL' %}
+                <td class="items zonaC" colspan="4">Alerta de Zona: <div class="textZona">Se detecto que el servicio es para una zona <b style="color: #000000;">Comercial</b>.</div></td>
+                {% elif cotiza.zona == 'NO COMERCIAL' %}
+                <td class="items zonaN" colspan="4">Alerta de Zona: <div class="textZona">Se detecto que el servicio es para una zona <b style="color: #000000;">No Comercial</b>, tenga en cuenta cambios en las tarifas.</div></td>
+                {% elif cotiza.zona == 'PELIGROSA' %}
+                <td class="items zonaP" colspan="4">Alerta de Zona: <div class="textZona">Se detecto que el servicio es para una zona <b style="color: #000000;">Peligrosa</b>, tenga en cuenta cambios en las tarifas.</div></td>
+                {% elif cotiza.zona == 'NO ZONA' %}
+                <td class="items zonaNZ" colspan="4">Alerta de Zona: <div class="textZona">No existe Zona configurada para este servicio, <b style="color: #000000;">favor de realizar asignación.</b></div></td>
+                {% endif %}
+                
+            </tr>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="seccion" colspan="4" style="text-align: left;">Mercancías</td>
+            </tr>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            {% if cotiza.tipoCarga == 'h' %}
+            <tr>
+                <td class="items" colspan="2">UN: <div class="text">{{cotiza.unHaz}}</div></td>
+                <td class="items" colspan="2">CLASS: <div class="text">{{cotiza.classHaz}}</div></td>
+            </tr>
+            {% endif%}
+            {% if cotiza.tipoCarga == 'r' %}
+            <tr>
+                <td class="items" colspan="2">Grados: <div class="text">{{cotiza.gradosRef}}</div></td>
+                <td class="items" colspan="2">Tipo de Unidad: <div class="text">{{cotiza.tipoUnidadRef}}</div></td>
+            </tr>
+            {% endif%}
+
+            <tr>
+                <td class="items">Envio: <div class="text">{{cotiza.velocidadEnvio.upper}}</div></td>
+                {% if cotiza.embalaje == "1" %}
+                    <td class="items">Embalaje: <div class="text">PALLETS</div></td>
+                    {% elif cotiza.embalaje == "2" %}
+                    <td class="items">Embalaje: <div class="text">SACOS</div></td>
+                    {% elif cotiza.embalaje == "3" %}
+                    <td class="items">Embalaje: <div class="text">BULTO</div></td>
+                    {% elif cotiza.embalaje == "4" %}
+                    <td class="items">Embalaje: <div class="text">TAMBOS</div></td>
+                    {% elif cotiza.embalaje == "5" %}
+                    <td class="items">Embalaje: <div class="text">ROLLOS</div></td>
+                    {% elif cotiza.embalaje == "6" %}
+                    <td class="items">Embalaje: <div class="text">CAJAS</div></td>
+                    {% elif cotiza.embalaje == "7" %}
+                    <td class="items">Embalaje: <div class="text">TUBOS</div></td>
+                    {% elif cotiza.embalaje == "8" %}
+                    <td class="items">Embalaje: <div class="text">CARGA SUELTA</div></td>
+                    {% elif cotiza.embalaje == "9" %}
+                    <td class="items">Embalaje: <div class="text">SUPER SACO</div></td>
+                    {% elif cotiza.embalaje == "10" %}
+                    <td class="items">Embalaje: <div class="text">OTRO</div></td>
+                    {% elif cotiza.embalaje == "11" %}
+                    <td class="items">Embalaje: <div class="text">BIDONES</div></td>
+                    {% elif cotiza.embalaje == "12" %}
+                    <td class="items">Embalaje: <div class="text">CUÑETES</div></td>
+                {% endif %}
+
+                <td class="items">Estibable: <div class="text">{{cotiza.estibable.upper}}</div></td>
+
+                {% for clasi in clasif %}
+                    <td class="items">Clasificacion: <div class="text">{{clasi.descripcion}}</div></td>
+                {% endfor %}
+                
+            </tr>
+            <tr>
+                <td class="items">Cantidad: <div class="text">{{cotiza.cantidad}}</div></td>
+                <td class="items">Volumen(m3): <div class="text">{{cotiza.volumen}}</div></td>
+                <td class="items">Peso Total: <div class="text">{{cotiza.pesoTotal}}{{cotiza.unidadMedida}}</div></td>
+                <td class="items">Descripción: <div class="text">{{cotiza.descrip}}</div></td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="seccion" colspan="4" style="text-align: left;">Servicios</td>
+            </tr>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="" colspan="4">
+                    <table>
+                        <tr>
+                            <th>Descripción</th>
+                            <th>Precio</th>
+                            <th>I.V.A.</th>
+                            <th>Ret.</th>
+                            <th></th>
+                            <th>Total</th>
+                        </tr>
+                        {% for serv in ServiciosAgregadosCotizacion %}
+                        {% for cotiza in ServicioCotizacion %}
+                        <tr>
+                            <td style="text-align: center;">{{serv.nameService}}</td>
+                            
+                            {% if cotiza.velocidadEnvio == 'Optimo' and serv.porcentaje == 0 %}
+                            <td style="text-align: center;">${{ serv.subtotalNoAgrega|floatformat:2 }}</td>
+                            <td style="text-align: center;">${{ serv.ivaNoAgrega|floatformat:2 }}</td>
+                            <td style="text-align: center;">${{ serv.retencion|floatformat:2 }}</td>
+                                {% if serv.priceService == 0.0 %}
+                                    <td style="text-align: right;">En Proceso de Cotización</td>
+                                {% else %}
+                                    <td style="text-align: right;">Incluye Impuestos</td>
+                                {% endif %}
+                            <td style="text-align: center;">${{ serv.priceService|floatformat:2 }}</td>
+
+                            {% elif cotiza.velocidadEnvio == 'Optimo' and serv.porcentaje > 0 %}
+                            <td style="text-align: center;">${{ serv.precioBaseOptExt|floatformat:2 }}</td>
+                            <td style="text-align: center;">${{ serv.porcentajeIvaOpt|floatformat:2 }}</td>
+                            <td style="text-align: center;">${{ serv.retencion|floatformat:2 }}</td>
+                                {% if serv.priceService == 0.0 %}
+                                    <td style="text-align: right;">En Proceso de Cotización</td>
+                                {% else %}
+                                    <td style="text-align: right;">Incluye Impuestos</td>
+                                {% endif %}
+                            <td style="text-align: center;">${{ serv.totalOptExt|floatformat:2 }}</td>
+
+                            {% elif cotiza.velocidadEnvio == 'Express' and serv.porcentaje == 0 %}
+                            <td style="text-align: center;">${{ serv.subtotalNoAgregaExp|floatformat:2 }}</td>
+                            <td style="text-align: center;">${{ serv.ivaNoAgregaExp|floatformat:2 }}</td>
+                            <td style="text-align: center;">${{ serv.retencion|floatformat:2 }}</td>
+                                {% if serv.priceService == 0.0 %}
+                                    <td style="text-align: right;">En Proceso de Cotización</td>
+                                {% else %}
+                                    <td style="text-align: right;">Incluye Impuestos</td>
+                                {% endif %}
+                            <td style="text-align: center;">${{ serv.totalExpNoAgrega|floatformat:2 }}</td>
+
+                            {% elif cotiza.velocidadEnvio == 'Express' and serv.porcentaje > 0 %}
+                            <td style="text-align: center;">${{ serv.precioBaseExpExt|floatformat:2 }}</td>
+                            <td style="text-align: center;">${{ serv.porcentajeIvaExp|floatformat:2 }}</td>
+                            <td style="text-align: center;">${{ serv.retencion|floatformat:2 }}</td>
+                                {% if serv.priceService == 0.0 %}
+                                    <td style="text-align: right;">En Proceso de Cotización</td>
+                                {% else %}
+                                    <td style="text-align: right;">Incluye Impuestos</td>
+                                {% endif %}
+                            <td style="text-align: center;">${{ serv.totalExpExt|floatformat:2 }}</td>
+                            {% endif %}
+                        
+                        </tr>
+                        {% endfor %}
+                        {% endfor%}
+                    </table>
+                </td>
+            </tr>
+            
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="seccion" colspan="4" style="text-align: left;">Información de Contacto</td>
+            </tr>
+            {% for contac in ContactoCotizacion %}
+            <tr>
+                <td class="items" colspan="2">Nombre Completo: <div class="text">{{contac.name}}</div></td>
+                <td class="items" colspan="2">Teléfono: <div class="text">{{contac.lada}}{{contac.phone}}</div></td>
+            </tr>
+            <tr>
+                <td class="items" colspan="2">E-Mail: <div class="text">{{contac.email}}</div></td>
+                <td class="items" colspan="2">Descripción: <div class="text">{{contac.description}}</div></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <table>
+        <tbody>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="notas" colspan="4">Notas:</td>
+            </tr>
+        </tbody>
+    </table>
+    <p>Los demás impuestos como ADVALOREM, IVA sobre valor factura, DTA, Previo van por cuenta del cliente, si la carga requiere algun permiso y/o certificado, se cobrara exclusivamente el costo del tramite.</p>
+    <pdf:nextpage />
+    <p><b style="color: red;">Disclaimers:</b></p>
+    <ol type="A">
+        <li>Estimado Cliente: Por favor confirmar la aceptación de estas tarifas antes de contactar con su proveedor o consignatario e informarnos cuando el embarque vaya a ser realizado a fin de hacer válidas las tarifas.</li>
+        <li>Antes de iniciar cualquier operación, favor de enviar Carta de Instrucciones detallada.</li>
+        <li>Si es la primera operación con nosotros le pedimos la siguente documentación: RFC, ALTA HACIENDA, COMPROBANTE DE DOMICILIO, IDENTIFICACIÓN DEL REPRESENTANTE LEGAL, ACTA CONSTITUTVA DE LA EMPRESA.</li>
+        <li>Nuestra cotización NO es válida para el manejo de mercancías peligrosas, perecederas, sobredimensionada.</li>
+        <li>T.T. están sujetos a cambios sin previo aviso y no incluyen tiempo para despacho aduanal, recolección y entrega.</li>
+        <li>VAT (IVA) aplicable de acuerdo a nuestras reglamentaciones gubernamentales.</li>
+        <li>Todos los gastos comprobables no incluidos en la presente cotización serán facturados al costo.</li>
+        <li>El T. de C. utilizado corresponde a la fecha de presentación de nuestra cotización, cualquier fluctuación deberá ser considerada.</li>
+        <li>Nuestra cotización cubre el periodo de validez mencionado, y esta sujeta a revisión una vez terminado.</li>
+        <li>En caso de que el mercado de fletes cambie drásticamente durante el tiempo de validez de esta cotización.</li>
+
+        <li>INTERLAND se reserva el derecho de ajustar los precios aquí ofertados, o en todo caso de renunciar a la prestación del servicio.</li>
+        <li> Las mercancías viajan por cuenta y riesgo de nuestros clientes, y no aseguramos las mismas de no mediar orden expresa por escrito. En
+            todas las operaciones de transporte nuestra responsabilidad no podrá exceder en ningún caso a la que asumen frente a nosotros los
+            ferrocarriles, compañías de navegación, compañías aéreas y de autotransporte federal o cualquier otro intermediario que intervenga en el
+            transcurso del transporte.</li>
+        <li>Esperando vernos favorecidos con su preferencia, quedamos a sus órdenes para cualquier duda o aclaración. Le enviamos un cordial saludo.</li>
+    </ol>
+    <br>
+
+    <p style="text-align: center; font-weight: bold;"><b>Firma de aceptación:</b></p>
+    <br>
+    
+    {% for cotiza in ServicioCotizacion %}
+    <p style="text-align: center">______________________________________________________________________________<br>{{ cotiza.fechaCarga}}</p>
+    <!-- <p style="text-align: center;"> {{ cotiza.fechaCarga}} </p> -->
+    {% endfor %}
+
+    <p style="text-align: center;"><b>Autorizó:</b></p>
+    <br>
+</body>
+</html>

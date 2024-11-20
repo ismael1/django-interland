@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- <style>
+        td {
+            padding-top: 4px; /* Parte Superior */
+            padding-bottom: 2px; /* Parte Inferior */
+            padding-left: 2px;
+            color: #272424;
+            font-size: 13px;
+        }
+        th {
+            padding-top: 4px; /* Parte Superior */
+            padding-bottom: 2px; /* Parte Inferior */
+            text-align: center;
+            color: #000000;
+            font-size: 13px;
+        }
+        table, td, th {
+            border: 1px solid black;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    </style> -->
+
+</head>
+<body>
+
+    <h1>Lista de Clientes</h1>
+
+    {% if queryset %}
+    
+        <table>
+            <thead>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Telefono</th>
+                <th>Pais</th>
+                <th>Estado</th>
+            </thead>
+            <tbody>
+                {% for custom in queryset %}
+                    <tr>
+                        <td> {{ custom.name }} </td>
+                        <td> {{ custom.email }} </td>
+                        <td> {{ custom.phone }} </td>
+                        <td> {{ custom.pais }} </td>
+                        <td> {{ custom.estado }} </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+    {% else %}
+        <h1>No hay Customer para Mostrar</h1>
+    {% endif %}
+    
+    <a href="{% url 'reporte_excel' %}">Reporte Excel</a>
+</body>
+</html>

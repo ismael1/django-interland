@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizacion</title>
+    <style type="text/css">
+        table {
+            width: 100%;
+        }
+
+        .header {
+            background-color: #2aab5c;
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            border: 1px solid #2aab5c;
+            border-radius: 2px;
+        }
+
+        .notas {
+            background-color: #056736;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: left;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .seccion {
+            background-color: #056736;
+            color: #ffffff;
+            vertical-align: middle;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 1px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .zonaP {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1px;
+            border: 1px solid transparent;
+            border-radius: 0.35rem;
+            color: #7d2c38;
+            background-color: #fcdde2;
+            border-color: #fbcfd6;
+        }
+
+        .zonaC {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1PX;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            color: #0e6251;
+            background-color: #d1f2eb;
+            border-color: #bfece3;
+        }
+
+        .zonaN {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1px;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            color: #806027;
+            background-color: #fdf1db;
+            border-color: #fdebcd;
+        }
+
+        .zonaNZ {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1px;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            color: #1f5b71;
+            background-color: #d8eff8;
+            border-color: #c8e9f5;
+        }
+
+        .alert {
+            color: #818182;
+            background-color: #fefefe;
+            border-color: #fdfdfe;
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+        }
+
+        .items {
+            background-color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: left;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .item {
+            background-color: #2aab5c;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #2aab5c;
+            border-radius: 30px;
+        }
+
+        .rechaza {
+            background-color: #780000;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #780000;
+            border-radius: 30px;
+        }
+
+        .aceptado {
+            background-color: #2aab5c;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #2aab5c;
+            border-radius: 30px;
+        }
+
+        .pendiente {
+            background-color: #f3ae38;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #f3ae38;
+            border-radius: 30px;
+        }
+
+        .cotizando {
+            background-color: #36adc5;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #36adc5;
+            border-radius: 30px;
+        }
+
+        .text {
+            color: #838887;
+            font-size: 12px;
+        }
+
+        .textZona {
+            color: #838887;
+            font-size: 12px;
+        }
+
+        .espacio {
+            background-color: #ffffff;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        p {
+            background-color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: justify;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        li {
+            background-color: #ffffff;
+            font-size: 10px;
+            text-align: justify;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -12px;
+            margin-left: -12px;
+        }
+
+        .my-3 {
+            margin-bottom: 1.5rem !important;
+        }
+
+        /* Estilos para la tarjeta personalizada */
+        .custom-card {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            /* Ancho máximo de la tarjeta */
+            margin: 0 auto;
+            background-color: #fff;
+            overflow: hidden;
+            /* Para asegurarse de que la imagen no se desborde */
+        }
+
+        /* Estilos para la imagen dentro de la tarjeta */
+        .custom-card img {
+            width: 100%;
+            height: auto;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        /* Estilos para el cuerpo de la tarjeta */
+        .custom-card-body {
+            padding: 1rem;
+        }
+
+        /* Estilos para el título de la tarjeta */
+        .custom-card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* Estilos para el contenido de la tarjeta */
+        .custom-card-text {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Estilos para el botón de la tarjeta */
+        .custom-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .custom-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .ribbon-box .ribbon-two {
+            position: absolute;
+            left: -5px;
+            top: -5px;
+            z-index: 1;
+            overflow: hidden;
+            width: 75px;
+            height: 75px;
+            text-align: right;
+        }
+        .ribbon-box .ribbon-two-danger span {
+            background: #f1556c;
+        }
+        .ribbon-box .ribbon-two span {
+            font-size: 13px;
+            color: #fff;
+            text-align: center;
+            line-height: 20px;
+            transform: rotate(-45deg);
+            width: 100px;
+            display: block;
+            box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0 0 rgba(0, 0, 0, 0.02);
+            position: absolute;
+            top: 19px;
+            left: -21px;
+            font-weight: 600;
+        }
+        .card {
+            border-radius: 0px;
+            background-color: white;
+            box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%), 0 0px 0 1px rgb(10 10 10 / 2%);
+            color: #4a4a4a;
+            display: block;
+            /* padding: 1.25rem; */
+        }
+        .card-pricing {
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header_content">
+        <table style="border-bottom:2px solid #2aab5c; table-layout: fixed; width: 100%;">
+            <tr>
+                <td style="border-bottom:8px solid #2aab5c; width: 20%;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="data:image/png;base64,{{ imgLogo }}" alt="Logo Interland" style="width: 100%;" />
+                    </div>
+                </td>
+                <td style="width: 60%;">
+                    <div
+                        style="align-items: center; padding-right: 20px; padding-left: 20px; margin-right: auto; margin-left: auto;">
+                        <div style="color:#000000"><b>INTERLAND TRANSPORT SA DE CV</b></div>
+                        <div>Jaime Balmes 11 Edificio C Piso 7 Of. 701B Col. Los MoralesPolanco Del. Miguel Hidalgo,
+                            Ciudad de Mexico, C.P. 11510,Mexico.</div>
+                        <div>RFC: ITR071117UD1</div>
+                        <div>Regimen: 601 - General de Ley Personas Morales.</div>
+                    </div>
+                </td>
+                <td style="width: 20%;">
+                    <div
+                        style="border:2px solid #6c757d; width:150px; align-items: center; padding-right: 20px; padding-left: 20px; margin-right: auto; margin-left: auto; padding-top: 10px; margin-top: auto;">
+                        <b style="font-weight: bold; color: #2aab5c;">COTIZACIÓN</b><br>
+                        <b style="font-weight: bold; color: #000000;">FOLIO ID:</b><br>
+                        <b style="font-weight: bold; color: #000000;">{{ folio }}</b>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="tg">
+
+        <thead>
+
+        </thead>
+        <tbody>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="seccion" colspan="2" style="text-align: left;">Información General</td>
+
+                <td class="seccion" colspan="2" style="text-align: right;"></td>
+
+            </tr>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="" colspan="4">
+                    <table style="table-layout: fixed; width: 100%; padding-bottom: 5px;">
+                        <tr>
+                            <td style="width: 50%; text-align: left;">
+                                <div style="display: flex; align-items: center;">
+                                    <b>Origen:</b>     
+                                    <div class="textZona"><b style="color: #000000;">{{origen}}</b></div>
+                                </div>
+                            </td>
+                            <td style="width: 50%; text-align: left;">
+                                <div style="display: flex; align-items: center;">
+                                    <b>Destino:</b>
+                                    <div class="textZona"><b style="color: #000000;">{{destino}}</b></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%; text-align: left;">
+                                <div style="display: flex; align-items: center;">
+                                    <b>Tipo de Operación:</b> <div class="textZona"><b style="color: #000000;">{{transporte}}</b></div>
+                                </div>
+                            </td>
+                            <td style="width: 50%; text-align: left;">
+                                <div style="display: flex; align-items: center;">
+                                    <b>Servicio:</b> <div class="textZona"><b style="color: #000000;">{{servicios}}</b></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%; text-align: left;">
+                                <div style="display: flex; align-items: center;">
+                                    <b>Tipo de Envío:</b> <div class="textZona"><b style="color: #000000;">Optimo</b></div>
+                                </div>
+                            </td>
+                            <td style="width: 50%; text-align: left;">
+                                <div style="display: flex; align-items: center;">
+                                    <b>Usuario que genera:</b> <div class="textZona"><b style="color: #000000;">Boot</b></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="" colspan="2">
+                    <table style="table-layout: fixed;  padding-bottom: 1px;">
+                        <tr>
+                            <td style="width: 60%; text-align: left;">
+                                <div style="display: flex; align-items: center;">
+                                    <b>Frecuencias:</b>
+                                </div>
+                                <table style="table-layout: fixed;">
+                                    <tbody>
+                                      <tr style="border-style: double; background-color: #EBEBEB;">
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>LUN</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>MAR</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>MIE</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>JUE</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>VIE</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>SAB</b></td>
+                                      </tr>
+                                      <tr style="border-style: double;">
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                      </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="" colspan="2">
+                    <table style="table-layout: fixed;  padding-bottom: 1px;">
+                        <tr>
+                            <td style="width: 60%; text-align: left;">
+                                <div style="display: flex; align-items: center;">
+                                    <b>Frecuencias:</b>
+                                </div>
+                                <table style="table-layout: fixed; ">
+                                    <tbody>
+                                      <tr style="border-style: double; background-color: #EBEBEB;">
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>LUN</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>MAR</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>MIE</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>JUE</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>VIE</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>SAB</b></td>
+                                      </tr>
+                                      <tr style="border-style: double;">
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                        <td style="text-align: center; padding-top: 8px; border: 1px solid #e7e7e7; border-spacing: 0;"><b>X</b></td>
+                                      </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="" colspan="2">
+                    <table style="table-layout: fixed;  padding-top: 8px;" style="text-align: center;">
+                        <tr>
+                            <td style="width: 25%; float: inherit;"></td>
+                            <td style="width: 50%; float: inherit;">
+                                <div style="display: flex; align-items: center;"><div class="aceptado">MONEDA: MXN</div></div>
+                            </td>
+                            <td style="width: 25%; float: inherit;"></td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="" colspan="2">
+                    <table style="table-layout: fixed;  padding-top: 8px;">
+                        <tr>
+                            <td style="width: 25%; text-align: center;"></td>
+                            <td style="width: 50%; text-align: center;">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="pendiente">ESTATUS: PENDIENTE</div>
+                                    <!--{% if cotiza.estatus == 0 %}
+                                    <div class="pendiente">ESTATUS: PENDIENTE</div>
+                                    {% elif cotiza.estatus == 1 %}
+                                    <div class="aceptado">ESTATUS: ACEPTADO</div>
+                                    {% elif cotiza.estatus == 2 %}
+                                    <div class="rechaza">ESTATUS: RECHAZADO</div>
+                                    {% elif cotiza.estatus == 3 %}
+                                    <div class="cotizando">ESTATUS: COTIZANDO</div>
+                                    {% endif %}-->
+                                </div>
+                            </td>
+                            <td style="width: 25%; text-align: center;"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="seccion" colspan="4" style="text-align: left;">Mercancías</td>
+            </tr>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <!--{% if cotiza.tipoCarga == 'h' %}-->
+            <tr>
+                <td class="items" colspan="2">UN: <div class="text"><!--{{cotiza.unHaz}}--></div>
+                </td>
+                <td class="items" colspan="2">CLASS: <div class="text"><!--{{cotiza.classHaz}}--></div>
+                </td>
+            </tr>
+            <!--{% endif%}-->
+            <!--{% if cotiza.tipoCarga == 'r' %}-->
+            <tr>
+                <td class="items" colspan="2">Grados: <div class="text"><!--{{cotiza.gradosRef}}--></div>
+                </td>
+                <td class="items" colspan="2">Tipo de Unidad: <div class="text"><!--{{cotiza.tipoUnidadRef}}--></div>
+                </td>
+            </tr>
+            <!--{% endif%}-->
+
+            <tr>
+                <td class="" colspan="4">
+                    <table>
+                        <tr>
+                            <th>MERCANCÍA</th>
+                            <th>EMBALAJE</th>
+                            <th>PESO TOTAL</th>
+                            <th>VOLUMEN TOTAL</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">{{ mercancia }}</td>
+                            <td style="text-align: center;">PALLETS</td>
+                            <td style="text-align: center;">{{ peso }}KG</td>
+                            <td style="text-align: center;">{{ volumen }}M3</td>
+                            
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+        </tbody>
+    </table>
+    {{ listaServ|safe }}
+    <table class="tg">
+        <thead></thead>
+        <tbody>
+            <tr>
+                <td class="espacio" colspan="4"></td>
+            </tr>
+            <tr>
+                <td class="seccion" colspan="4" style="text-align: left;">Información de Contacto</td>
+            </tr>
+            
+            <tr>
+                <td class="items" colspan="2">Nombre Completo: <div class="text">{{ cliente }}</div>
+                </td>
+                <td class="items" colspan="2">Teléfono: <div class="text">{{ telefono }}</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table style="table-layout: fixed; width: 100%; padding-bottom: 5px;">
+        <tr>
+            <td style="width: 100%; text-align: left;">
+                <div style="display: flex; align-items: center;">
+                    <img src="data:image/png;base64,{{ imgCinta }}" alt="optimo" title="Servicio">
+                </div>
+            </td>
+        </tr>
+    </table>
+    <pdf:nextpage>
+    {{ listaClau|safe }}
+    <!--ol type="A">
+        {% for disc in disclamers %}
+        <li>
+            {{ disc.condicion }}
+        </li>
+        {% endfor %}
+    </ol-->
+    <br>
+
+    <p style="text-align: center; font-weight: bold;"><b>Firma de aceptación:</b></p>
+    <br>
+
+    
+    <p style="text-align: center">______________________________________________________________________________<br></p>
+
+</body>
+
+</html>
