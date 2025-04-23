@@ -18534,3 +18534,4 @@ Not Found: /all
 [23/Apr/2025 17:20:17] "GET / HTTP/1.0" 200 1700
 Unauthorized: /files/
 [23/Apr/2025 17:27:07] "GET /files/ HTTP/1.0" 401 5169
+[23/Apr/2025 17:41:05] "GET /planesCotizaciones/ HTTP/1.0" 200 11518
