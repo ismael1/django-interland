@@ -1,4 +1,7 @@
-from datetime import datetime, date
+
+from datetime import datetime, date, timedelta
+import smtplib
+from email.mime.text import MIMEText
 import json
 from urllib.parse import urlparse
 from django.db.models.query_utils import Q
@@ -24,7 +27,6 @@ from catalogos.models import UnitBox, Terminos_Condiciones
 from catalogos.serializers import UnitBoxSerializer, TerminosCondicionesSerializer
 
 from inland_django.utils import compress_and_encode_image
-
 
 class reporteLeads(viewsets.ModelViewSet):
     queryset = leds_chatboot.objects.all()
@@ -142,12 +144,12 @@ def leadsReporte(request):
     fecha_fin = data['datos']['fecha_fin']
     indice = 0
     result = []
-    
     resp = leds_chatboot.objects.filter(Q(fecha__range=(fecha_ini, fecha_fin))).order_by('fecha')
     re = LedsSerializer(resp, many=True)
     for r in re.data:
         indice = indice + 1
-        obj = {'No.':indice, 'Número de Agente':r['numero_agente'],'Nombre de Agente':r['nombre_agente'],'Conteo de Leads':r['conteo'],'Nombre de Cliente':r['nombre_usr'],'Número de Cliente':r['numero_usr'], 'Canal de Entrada':r['canal_entrada'], 'Fecha del Lead':r['fecha']}
+        obj = {'No.':indice, 'Número de Agente':r['numero_agente'],'Nombre de Agente':r['nombre_agente'],'Conteo de Leads':r['conteo'],'Nombre de Cliente':r['nombre_usr'],'Número de Cliente':r['numero_usr'], 'Correo Cliente': r['correo_usr'], 'Canal de Entrada':r['canal_entrada'], 'Fecha del Lead':r['fecha']}
+
         result.append(obj)
 
     return Response(result)
@@ -707,7 +709,6 @@ def enviaDatosAgenteChatboot(request):
     
     return Response(resp)
 
-
 def envia_mensajes(datos):
     data = json.loads(datos)
     #DATOS AGENTE Y CLIENTE
@@ -721,20 +722,32 @@ def envia_mensajes(datos):
     telefono =data.get("numero_lead")
     nombreServicio = data.get("nombreServicio")
     canal_entrada = data.get("canal_entrada")
-    numeroBoot = '5215541708682'
+    correo = data.get("correo")
+    tipo_lead = 'Normal'
+    urlPromocion = data.get("urlPromocion")
+    opcionOferta = data.get("opcionOferta")
+    '''numeroBoot = '5215541708682'
     url = "https://api.botmaker.com/v2.0/chats-actions/send-messages"
     headers = {
         "Content-Type": "application/json",
-        "access-token": "eyJhbGciOiJIUzUxMiJ9.eyJidXNpbmVzc0lkIjoiaW50ZXJsYW5kIiwibmFtZSI6Ik1pZ3VlbCIsImFwaSI6dHJ1ZSwiaWQiOiJTSUFsUG1Ea0JOVDBBQWtubVVlWGMzOWkxWHMyIiwiZXhwIjoxODgxMTY5OTk0LCJqdGkiOiJTSUFsUG1Ea0JOVDBBQWtubVVlWGMzOWkxWHMyIn0.Uhs-HEsh_Reu5bBwhFy6v9sVbWLA6k1dUDs0tHOvzn_UQhbEfEU4E63iHjoTl4vSr8fG_jlMd5Z8Ja3BN0f_gw"
+        "access-token": "eyJhbGciOiJIUzUxMiJ9.eyJidXNpbmVzc0lkIjoiaW50ZXJsYW5kIiwibmFtZSI6ImRhbmllbC5nb21lekBpbnRlcmxhbmQuYnVzaW5lc3MiLCJhcGkiOnRydWUsImlkIjoiMkQ0eTBiZlZJM2NITzg5anE0TjJiV2ExQ2J1MSIsImV4cCI6MTg5NTA3ODEwMiwianRpIjoiMkQ0eTBiZlZJM2NITzg5anE0TjJiV2ExQ2J1MSJ9.JuK8kBN8wrOL011slgpOUAmq1jcnrXxZl6WNLVPFOEp6Q0-lTcmYq9q-wN3lVPdgCal0Z8ETxVdiaE0fQeAq-w"
     }
+
+    estatusAviso = ""'''
+
+    if urlPromocion is None:
+        urlPromocion = ''
 
     conteo_numero_valida = numeros_ejecutivos_chatboot.objects.filter(Q(numero_agente=telefono)).count()
 
     agente = numeros_ejecutivos_chatboot.objects.filter(Q(servicio=tipoServicio)).filter(Q(es_gerente=False))
     age = NumerosSerializer(agente, many=True)
-    gerente = numeros_ejecutivos_chatboot.objects.filter(Q(servicio=tipoServicio)).filter(Q(es_gerente=True))
-    ger = NumerosSerializer(gerente, many=True)
 
+    if urlPromocion == '':
+        gerente = numeros_ejecutivos_chatboot.objects.filter(Q(servicio=tipoServicio)).filter(Q(es_gerente=True))
+    else:
+        gerente = numeros_ejecutivos_chatboot.objects.filter(Q(id = 2)).filter(Q(es_gerente=True))
+    ger = NumerosSerializer(gerente, many=True)
     telefonoAgente = telefonoAgente
     nombreAgente = nombreAgente + ' ' + apellidoAgente
     telefonoGerente = ger.data[0]['numero_agente']
@@ -743,18 +756,19 @@ def envia_mensajes(datos):
     fecha_actual = date.today()
 
     conteo = leds_chatboot.objects.filter(Q(numero_agente=telefonoAgente)).filter(Q(fecha=fecha_actual)).aggregate(Max('conteo'))['conteo__max']
-    print(conteo, 'valida conteo agente')
     if(conteo is None):
         conteo = 0
     conteo = conteo +1
 
-    #mensajeAgente = 'Hola '+nombreAgente+'! El cliente *'+cliente+'* con número telefónico: +'+telefono+' acaba de solicitar informacion de un servicio '+nombreServicio
-    #mensajeGerente = 'Hola '+nombreGerente+'! Te informamos que el cliente *'+cliente+'* con número telefónico: +'+telefono+' acaba de solicitar informacion de un servicio '+nombreServicio+'. Este cliente ya esta siendo atendido por '+nombreAgente
-    mensajeAgente = '*'+nombreAgente+'*: ¡Bien hecho! acabas de recibir un nuevo lead No. *'+str(conteo)+'*, Nombre del cliente: *'+cliente+'*, Número Telefónico: '+telefono+'. Recuerda registrar tus leads por día o semana para no perder tu progreso.'
+    if urlPromocion == '':
+        mensajeAgente = '*'+nombreAgente+'*: ¡Bien hecho! acabas de recibir un nuevo lead No. *'+str(conteo)+'*, Nombre del cliente: *'+cliente+'*, Número Telefónico: '+telefono+'. Recuerda registrar tus leads por día o semana para no perder tu progreso.'
+    else:
+        mensajeAgente = '*'+nombreAgente+'*: ¡Bien hecho! acabas de recibir un nuevo lead No. *'+str(conteo)+'*, Nombre del cliente: *'+cliente+'*, Número Telefónico: '+telefono+', el cliente está interesado en la oferta: *'+opcionOferta+'*, el detalle de la oferta lo puedes ver en: '+urlPromocion
+        tipo_lead = 'Oferta'
     mensajeGerente = '*'+nombreGerente+'*: ¡Nuevo cliente! hemos recibido una nueva solicitud de información para un servicio '+nombreServicio+' el nombre del cliente es *'+cliente+'* con numero telefónico: '+telefono+', este cliente está siendo atendido por: *'+nombreAgente+'*'
 
 
-    payload1 = {
+    '''payload1 = {
         "chat": {
             "channelId": numeroBoot,
             "contactId": telefonoAgente
@@ -767,7 +781,9 @@ def envia_mensajes(datos):
     }
 
     response1 = requests.request("POST", url, json=payload1, headers=headers)
-    print(response1)
+
+    if int(response1.status_code) == 401:
+        notifica_evento_token_boot("daniel.gomez@interland.business", "Aviso Error Botmaker", "Actualiza el token, ya no se envia el mensaje de aviso a los agentes")
     
     payload2 = {
         "chat": {
@@ -781,11 +797,26 @@ def envia_mensajes(datos):
         ]
     }
 
-    response2 = requests.request("POST", url, json=payload2, headers=headers)  
-    print(response2)
+    response2 = requests.request("POST", url, json=payload2, headers=headers)
+    
+    if int(response1.status_code) == 401:
+        notifica_evento_token_boot("daniel.gomez@interland.business", "Aviso Error Botmaker", "Actualiza el token, ya no se envia el mensaje de aviso a los agentes")'''
 
-    if conteo_numero_valida == 0:
-        leds_chatboot.objects.create(conteo = conteo, numero_agente = telefonoAgente, nombre_agente=nombreAgente, mensaje_boot = mensajeAgente, numero_usr = telefono, nombre_usr = cliente, canal_entrada = canal_entrada)
+    
+
+    if urlPromocion == '':    
+        mensaje_whatsapp_automatico_agente(telefonoAgente, nombreAgente, conteo, cliente, telefono, nombreServicio)
+        mensaje_whatsapp_automatico_gerente(telefonoGerente, nombreGerente, nombreServicio, cliente, telefono,nombreAgente)
+        mensaje_whatsapp_automatico_gerente('5215543280509', nombreGerente, nombreServicio, cliente, telefono,nombreAgente)
+    else:
+        mensaje_whatsapp_automatico_agente_imagen(telefonoAgente, nombreAgente, conteo, cliente, telefono, opcionOferta, urlPromocion)
+        mensaje_whatsapp_automatico_gerente_imagen(telefonoGerente, nombreGerente, opcionOferta, cliente, telefono,nombreAgente, urlPromocion)
+        mensaje_whatsapp_automatico_gerente_imagen('5215543280509', nombreGerente, opcionOferta, cliente, telefono,nombreAgente, urlPromocion)
+
+        #Usuario de prueba
+    
+    leds_chatboot.objects.create(conteo = conteo, numero_agente = telefonoAgente, nombre_agente=nombreAgente, mensaje_boot = mensajeAgente, numero_usr = telefono, nombre_usr = cliente, canal_entrada = canal_entrada, correo_usr = correo, tipo_lead = tipo_lead)
+    estatusAviso = "Se envio el mensaje al agente y al gerente"
 
     return Response({"info": True})
 
@@ -793,39 +824,102 @@ def envia_mensajes(datos):
 @api_view(['POST','GET'])
 def obtener_agente_rotativo(request):
     data = json.loads(request.body)
+    print(data)
     telefono = data.get('telefono')
     cliente = data.get('nombreCliente')
     tipoServicio = int(data.get('tipoServicio'))
     nombreServicio = data.get('nombreServicio')
     canal_entrada = data.get('canal_entrada')
+    correo = data.get('email')
+    tipo_lead = 'Normal'
+    urlPromocion = data.get('urlPromocion')
+    opcionOferta = data.get('opcionOferta')
     telefonoAgente = ''
     nombreAgente = ''
     infoAgente = {}
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
 
-    # Filtrar los leads que coincidan con el número de teléfono y la fecha actual
-    existencia_lead = leds_chatboot.objects.filter(Q(numero_usr=telefono), Q(date_create=fecha_actual))[:1]
+    existencia_lead = leds_chatboot.objects.filter(Q(numero_usr=telefono)).order_by('-date_create')[:1]
+
+    if urlPromocion is None:
+        urlPromocion = ''
+
     if existencia_lead.count() > 0:
         datoLead = LedsSerializer(existencia_lead, many=True)
-        numeroAgente = datoLead.data[0]['numero_agente']
+        fecha_lead = datetime.strptime(datoLead.data[0]['date_create'],"%Y-%m-%d").date()
+        
+        fecha_actual = datetime.strptime(fecha_actual,"%Y-%m-%d").date()
 
-        agente = numeros_ejecutivos_chatboot.objects.filter(Q(es_gerente=False), Q(estatus=1), Q(numero_agente = numeroAgente))
-        agenteSer = NumerosSerializer(agente, many=True)
-        idAgente = agenteSer.data[0]['id']
-        telefonoAgente = agenteSer.data[0]['numero_agente']
-        nombreAgente = agenteSer.data[0]['nombre']
-        apellidoAgente = agenteSer.data[0]['apellido']
+        #agregamos 30 días a la fecha del lead
+        fecha_con_30_dias = fecha_lead + timedelta(days=30)
+        
+        #Comprobamos si la fecha con los 30 días ya ha pasado
+        if fecha_actual > fecha_con_30_dias:
+            ultimo_lead = leds_chatboot.objects.order_by('-id')[:1]
+            uleadSer = LedsSerializer(ultimo_lead, many=True)
+            
+            numeroAgente = uleadSer.data[0]['numero_agente']
 
-        infoAgente = {"id_agente" : idAgente, 
-                        "numero_agente" : telefonoAgente, 
-                        "nombre_agente" : nombreAgente, 
-                        "apellido_agente" : apellidoAgente,
-                        "servicio" : tipoServicio,  
-                        "nombre_lead" : cliente,
-                        "numero_lead" : telefono,
-                        "nombreServicio": nombreServicio,
-                        "canal_entrada":canal_entrada,
-                    }
+            agente = numeros_ejecutivos_chatboot.objects.filter(Q(es_gerente=False), Q(estatus=1), Q(numero_agente = numeroAgente))
+            agenteSer = NumerosSerializer(agente, many=True)
+            idAgente = int(agenteSer.data[0]['id']) + 2
+
+            if telefono == '5215510296661' or telefono == '5215636580608':
+                idAgente = 3
+
+            numMax = numeros_ejecutivos_chatboot.objects.filter(Q(es_gerente=False), Q(estatus=1)).aggregate(Max('id'))['id__max']
+
+            if idAgente > numMax:
+                idAgente = 1
+            
+            agenteAsigna = numeros_ejecutivos_chatboot.objects.filter(Q(id=idAgente))
+            agenteAsSer = NumerosSerializer(agenteAsigna, many=True)
+
+            idAgente = agenteAsSer.data[0]['id']
+            telefonoAgente = agenteAsSer.data[0]['numero_agente']
+            nombreAgente = agenteAsSer.data[0]['nombre']
+            apellidoAgente = agenteAsSer.data[0]['apellido']
+
+            infoAgente = {"id_agente" : idAgente, 
+                            "numero_agente" : telefonoAgente, 
+                            "nombre_agente" : nombreAgente, 
+                            "apellido_agente" : apellidoAgente,
+                            "servicio" : tipoServicio,  
+                            "nombre_lead" : cliente,
+                            "numero_lead" : telefono,
+                            "nombreServicio": nombreServicio,
+                            "canal_entrada":canal_entrada,
+                            "correo":correo,
+                            "tipo_lead":tipo_lead,
+                            "urlPromocion": urlPromocion,
+                            "opcionOferta": opcionOferta,
+                        }
+        else:
+            
+            numeroAgente = datoLead.data[0]['numero_agente']
+            agente = numeros_ejecutivos_chatboot.objects.filter(Q(es_gerente=False), Q(estatus=1), Q(numero_agente = numeroAgente))
+            agenteSer = NumerosSerializer(agente, many=True)
+            idAgente = agenteSer.data[0]['id']
+            telefonoAgente = agenteSer.data[0]['numero_agente']
+            nombreAgente = agenteSer.data[0]['nombre']
+            apellidoAgente = agenteSer.data[0]['apellido']
+
+            infoAgente = {"id_agente" : idAgente, 
+                            "numero_agente" : telefonoAgente, 
+                            "nombre_agente" : nombreAgente, 
+                            "apellido_agente" : apellidoAgente,
+                            "servicio" : tipoServicio,  
+                            "nombre_lead" : cliente,
+                            "numero_lead" : telefono,
+                            "nombreServicio": nombreServicio,
+                            "canal_entrada":canal_entrada,
+                            "correo":correo,
+                            "tipo_lead":tipo_lead,
+                            "urlPromocion": urlPromocion,
+                            "opcionOferta": opcionOferta,
+                        }
+
+    
     else:
         ultimo_lead = leds_chatboot.objects.order_by('-id')[:1]
         uleadSer = LedsSerializer(ultimo_lead, many=True)
@@ -858,9 +952,308 @@ def obtener_agente_rotativo(request):
                         "numero_lead" : telefono,
                         "nombreServicio": nombreServicio,
                         "canal_entrada":canal_entrada,
+                        "correo":correo,
+                        "tipo_lead":tipo_lead,
+                        "urlPromocion": urlPromocion,
+                        "opcionOferta": opcionOferta,
                     }
 
 
     datos = json.dumps(infoAgente)
     envia_mensajes(datos)
     return Response(datos)
+    
+def notifica_evento_token_boot(destinatario, asunto, cuerpo):
+
+    mi_correo = 'sisproyect@gmail.com' #emailS.data[0]['correo']
+    mi_contraseña = 'ntbl mrgu brvv qmiq' #emailS.data[0]['contra']
+    servidor_smtp = 'smtp.gmail.com' #emailS.data[0]['host']
+    puerto = 587
+
+    # Crear el mensaje
+    mensaje = MIMEText(cuerpo)
+    mensaje['From'] = mi_correo
+    mensaje['To'] = destinatario
+    mensaje['Subject'] = asunto
+
+    # Conectar al servidor SMTP y enviar el correo
+    with smtplib.SMTP(servidor_smtp, puerto) as smtp:
+        smtp.starttls()
+        smtp.login(mi_correo, mi_contraseña)
+        smtp.sendmail(mi_correo, destinatario, mensaje.as_string())
+
+def mensaje_whatsapp_automatico_agente(telefonoAgente, nombreAgente, conteo, cliente, telefono, nombreServicio):
+
+    url = "https://graph.facebook.com/v21.0/436076202933089/messages"
+    headers = {
+        "Authorization": "Bearer EAAIlr1tYF2gBOwThZA06AZCY0v0e2NdInndq9RVdoEpyMMZA5YMLXEjPI4zNn1JpTZCFQ1YKzqYTSxyWZAGa5lbDw2BIds1SBUEDhhjxyasrNmqizhIL6qJWsl7D6vFzJ1KsjY8mcZBrwCbhXoiFN9mj99gX7xgk3A22mAvcQMY8wVnmt4F6Nfr9D6PVn0bs8JCwZDZD",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": telefonoAgente,
+        "type": "template",
+        "template": {
+            "name": "nuevo_lead",
+            "language": {
+                "code": "es_MX"
+            },
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "text", 
+                            "parameter_name":"titulo_lead",
+                            "text": "¡Nuevo Lead!"
+                        }
+                    ]
+                },
+                {
+                    "type": "body",
+                    "parameters": [
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_usuario",
+                            "text": nombreAgente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"conteo_lead",
+                            "text": conteo
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_lead",
+                            "text": cliente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"numero_lead",
+                            "text": telefono
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_servicio",
+                            "text": nombreServicio
+                        }
+
+                        
+                    ]
+                }
+            ]
+        }
+    }
+    response = requests.post(url, headers=headers, json=payload)
+
+    print(response)
+    
+    return response.json()
+
+def mensaje_whatsapp_automatico_gerente(telefonoGerente, nombreGerente, nombreServicio, nombreCliente, telefonoCliente, nombreAgente):
+
+    url = "https://graph.facebook.com/v21.0/436076202933089/messages"
+    headers = {
+        "Authorization": "Bearer EAAIlr1tYF2gBOwThZA06AZCY0v0e2NdInndq9RVdoEpyMMZA5YMLXEjPI4zNn1JpTZCFQ1YKzqYTSxyWZAGa5lbDw2BIds1SBUEDhhjxyasrNmqizhIL6qJWsl7D6vFzJ1KsjY8mcZBrwCbhXoiFN9mj99gX7xgk3A22mAvcQMY8wVnmt4F6Nfr9D6PVn0bs8JCwZDZD",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": telefonoGerente,
+        "type": "template",
+        "template": {
+            "name": "nuevo_lead_g",
+            "language": {
+                "code": "es_MX"
+            },
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "text", 
+                            "parameter_name":"titulo_lead",
+                            "text": "¡Nuevo Lead!"
+                        }
+                    ]
+                },
+                {
+                    "type": "body",
+                    "parameters": [
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_gerente",
+                            "text": nombreGerente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_servicio",
+                            "text": nombreServicio
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_cliente",
+                            "text": nombreCliente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"telefono_cliente",
+                            "text": telefonoCliente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_agente",
+                            "text": nombreAgente
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    
+    response = requests.post(url, headers=headers, json=payload)
+
+    print(response)
+    
+    return response.json()
+
+def mensaje_whatsapp_automatico_agente_imagen(telefonoAgente, nombreAgente, conteo, cliente, telefono, nombreServicio, urlPromocion):
+
+    url = "https://graph.facebook.com/v21.0/436076202933089/messages"
+    headers = {
+        "Authorization": "Bearer EAAIlr1tYF2gBOwThZA06AZCY0v0e2NdInndq9RVdoEpyMMZA5YMLXEjPI4zNn1JpTZCFQ1YKzqYTSxyWZAGa5lbDw2BIds1SBUEDhhjxyasrNmqizhIL6qJWsl7D6vFzJ1KsjY8mcZBrwCbhXoiFN9mj99gX7xgk3A22mAvcQMY8wVnmt4F6Nfr9D6PVn0bs8JCwZDZD",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": telefonoAgente,
+        "type": "template",
+        "template": {
+            "name": "nuevo_lead_imagen",
+            "language": {
+                "code": "es_MX"
+            },
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "image",
+                            "image": {
+                                "link": urlPromocion
+                            } 
+                        }
+                    ]
+                },
+                {
+                    "type": "body",
+                    "parameters": [
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_usuario",
+                            "text": nombreAgente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"conteo_lead",
+                            "text": conteo
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_lead",
+                            "text": cliente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"numero_lead",
+                            "text": telefono
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_servicio",
+                            "text": nombreServicio
+                        }
+
+                        
+                    ]
+                }
+            ]
+        }
+    }
+    response = requests.post(url, headers=headers, json=payload)
+
+    print(response)
+    
+    return response.json()
+
+def mensaje_whatsapp_automatico_gerente_imagen(telefonoGerente, nombreGerente, nombreServicio, nombreCliente, telefonoCliente, nombreAgente, urlPromocion):
+
+    url = "https://graph.facebook.com/v21.0/436076202933089/messages"
+    headers = {
+        "Authorization": "Bearer EAAIlr1tYF2gBOwThZA06AZCY0v0e2NdInndq9RVdoEpyMMZA5YMLXEjPI4zNn1JpTZCFQ1YKzqYTSxyWZAGa5lbDw2BIds1SBUEDhhjxyasrNmqizhIL6qJWsl7D6vFzJ1KsjY8mcZBrwCbhXoiFN9mj99gX7xgk3A22mAvcQMY8wVnmt4F6Nfr9D6PVn0bs8JCwZDZD",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": telefonoGerente,
+        "type": "template",
+        "template": {
+            "name": "nuevo_lead_g_imagen",
+            "language": {
+                "code": "es_MX"
+            },
+            "components": [
+                {
+                    "type": "header",
+                    "parameters": [
+                        {
+                            "type": "image",
+                            "image": {
+                                "link": urlPromocion
+                            } 
+                        }
+                    ]
+                },
+                {
+                    "type": "body",
+                    "parameters": [
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_gerente",
+                            "text": nombreGerente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_servicio",
+                            "text": nombreServicio
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_cliente",
+                            "text": nombreCliente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"telefono_cliente",
+                            "text": telefonoCliente
+                        },
+                        {
+                            "type": "text",
+                            "parameter_name":"nombre_agente",
+                            "text": nombreAgente
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    
+    response = requests.post(url, headers=headers, json=payload)
+
+    print(response)
+    
+    return response.json()

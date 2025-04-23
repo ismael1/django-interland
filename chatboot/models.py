@@ -21,14 +21,16 @@ class leds_chatboot(models.Model):
     fecha = models.DateField(auto_now_add=True)
     numero_agente = models.CharField(max_length=20, null=True)
     nombre_agente = models.CharField(max_length=50, null=True)
-    mensaje_boot = models.CharField(max_length=300, null=True)
+    mensaje_boot = models.CharField(max_length=600, null=True)
     numero_usr = models.CharField(max_length=20, null=True)
     nombre_usr = models.CharField(max_length=50, null=True)
+    tipo_lead = models.CharField(max_length=10, null=True)
     usuario_alta = models.CharField(max_length=20, blank=True, null=True)
     date_create = models.DateField(auto_now_add=True)
     date_edit = models.DateTimeField(null=True)
     usuario_edita = models.CharField(max_length=20, blank=True, null=True)
     canal_entrada = models.CharField(max_length=20, blank=True, null=True)
+    correo_usr = models.CharField(max_length=100, blank=True, null=True)
     
     class Meta:
         ordering = ('id',)
