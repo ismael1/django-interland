@@ -18537,3 +18537,9 @@ Unauthorized: /files/
 [23/Apr/2025 17:41:05] "GET /planesCotizaciones/ HTTP/1.0" 200 11518
 [23/Apr/2025 17:50:24] "GET /proveedores/ HTTP/1.0" 200 14744
 [23/Apr/2025 17:52:16] "GET / HTTP/1.0" 200 1700
+[23/Apr/2025 17:58:35] "GET / HTTP/1.0" 200 1700
+Unauthorized: /api/v1/users/
+[23/Apr/2025 18:01:04] "GET /api/v1/users/ HTTP/1.0" 401 9496
+Not Found: /.env
+[23/Apr/2025 18:16:25] "GET /.env HTTP/1.0" 404 27
+[23/Apr/2025 18:16:40] "GET /envio/ HTTP/1.0" 200 8724
